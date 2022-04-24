@@ -12,7 +12,7 @@ const unicodeToUtf8 = (value) => {
     if (value < 0x80) {
       // 码点小于2^7,utf-8 长度为1字节
       // 0XXX XXXX，0000 0000-0111 1111共128个，对应ascii码
-      return [value]
+      return Uint8Array.from([value])
     } else if (value < 0x800) {
       // 码点对齐0x7ff结尾, 实际码点范围是 0x81 - 0x7ff
       // 110X XXXX 10XX XXXX 理论可以承载字符2^11，2048个字符,字符较少，还不能囊括汉字
@@ -24,7 +24,7 @@ const unicodeToUtf8 = (value) => {
       // + 1100 0000
       low += 0x80
       // + 1000 0000
-      return [high, low]
+      return Uint8Array.from([high, low])
     } else if (value < 0x10000) {
       // 码点对齐0xffff结尾, 实际码点范围是 0x800 - 0xffff
       // 1110 XXXX 10XX XXXX 10XX XXXX 理论可以承载字符2^16，65536个字符，囊括了大部分汉字, 码点尚未超出0号平面
@@ -41,7 +41,7 @@ const unicodeToUtf8 = (value) => {
       // + 1000 0000
       third += 0x80
       // + 1000 0000
-      return [first, second, third]
+      return Uint8Array.from([first, second, third])
     } else if (value < 0x110000) {
       // 码点对齐0x10000开头, 实际码点范围是 0x10000 - 0x10ffff
       // 1111 0XXX 10XX XXXX 10XX XXXX 10XX XXXX 理论可以承载字符2^21，2097152个字符，完全足够覆盖了0-16号平面了
@@ -60,7 +60,7 @@ const unicodeToUtf8 = (value) => {
       third += 0x80
       // + 1000 0000
       four += 0x80
-      return [first, second, third, four]
+      return Uint8Array.from([first, second, third, four])
     } else {
       throw new Error('unicode point larger than 0x10ffff')
     }
@@ -73,8 +73,8 @@ const unicodeToUtf8 = (value) => {
 
 for (let i = 0; i < 0x110000; i++) {
   try {
-    if (String.fromCodePoint(i) !== Buffer.from(unicodeToUtf8(i)).toString()) {
-      console.log(i.toString(16), String.fromCodePoint(i))
+    if (String.fromCodePoint(i) !== unicodeToUtf8(i).toString()) {
+      // console.log(i.toString(16), String.fromCodePoint(i))
       // break
     }
   } catch {
